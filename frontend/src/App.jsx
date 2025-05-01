@@ -1,4 +1,3 @@
-// File: App.jsx
 import React, { useState, useEffect } from "react";
 import {
   getDefaultConfig,
@@ -48,46 +47,59 @@ function InnerApp() {
   const [hasInteracted, setHasInteracted] = useState(false);
   const [pendingFiles, setPendingFiles] = useState([]);
   const [uploadProgress, setUploadProgress] = useState(0);
-  const [retryCounts, setRetryCounts] = useState({});
   const currentYear = new Date().getFullYear();
-  
-  
-  // Pending dosyaları kaydet
-useEffect(() => {
-  if (pendingFiles.length > 0) {
-    localStorage.setItem('pendingFiles', JSON.stringify(pendingFiles));
-  }
-}, [pendingFiles]);
 
-// Pending dosyaları yükle
-useEffect(() => {
-  const saved = localStorage.getItem('pendingFiles');
-  if (saved) setPendingFiles(JSON.parse(saved));
-}, []);
+  // Load pending files from localStorage on mount
+  useEffect(() => {
+    const saved = localStorage.getItem('pendingFiles');
+    if (saved) setPendingFiles(JSON.parse(saved));
+  }, []);
 
-const cleanupMaxRetryFiles = () => {
-  setPendingFiles(prevFiles => {
-    // 3 veya daha fazla denemesi olanları filtrele
-    const filtered = prevFiles.filter(file => (file.retries || 0) < 3);
-    
-    // Eğer filtreleme sonucu değişiklik olduysa
-    if (filtered.length !== prevFiles.length) {
-      // localStorage'ı güncelle
-      localStorage.setItem('pendingFiles', JSON.stringify(filtered));
-      return filtered;
+  
+  // Save pending files to localStorage when they change
+  useEffect(() => {
+    if (pendingFiles.length > 0) {
+      localStorage.setItem('pendingFiles', JSON.stringify(pendingFiles));
+    } else {
+      localStorage.removeItem('pendingFiles');
     }
-    return prevFiles;
-  });
-};
-// Pending dosyaları temizleme efekti
-useEffect(() => {
-  cleanupMaxRetryFiles();
-}, [pendingFiles]); // pendingFiles değiştiğinde çalışır
+  }, [pendingFiles]);
 
-// Component mount olduğunda da çalıştır
-useEffect(() => {
-  cleanupMaxRetryFiles();
-}, []); // Sadece mount olduğunda çalışır
+  // Clean up pending files
+  const cleanupPendingFiles = () => {
+    setPendingFiles(prevFiles => {
+      // Keep files that are either:
+      // 1. Not failed, or
+      // 2. Failed but not user-rejected
+      const filtered = prevFiles.filter(file => 
+        file.status !== 'failed' || 
+        (file.status === 'failed' && file.error?.type !== 'user_rejected')
+      );
+      
+      if (filtered.length !== prevFiles.length) {
+        return filtered;
+      }
+      return prevFiles;
+    });
+  };
+
+  // Run cleanup on mount
+  useEffect(() => {
+    cleanupPendingFiles();
+  }, []);
+
+
+  useEffect(() => {
+    // Eğer bir hata mesajı varsa ve bu mesaj boş değilse
+    if (info && info.trim() !== "") {
+      const timer = setTimeout(() => {
+        setInfo(""); // 5 saniye sonra mesajı temizle
+      }, 5000); // 5000ms = 5 saniye
+  
+      // Component unmount olduğunda timer'ı temizle
+      return () => clearTimeout(timer);
+    }
+  }, [info]); // info state'i değiştiğinde bu efekt yeniden çalışsın
 
   // Initialize contract
   useEffect(() => {
@@ -129,7 +141,6 @@ useEffect(() => {
   }, [files, pendingFiles, searchTerm, dateFilter, sortOrder]);
 
   const filterAndSortFiles = () => {
-    // Only show confirmed files in main list
     let result = [...files];
     
     if (searchTerm) {
@@ -177,7 +188,6 @@ useEffect(() => {
   const uploadToIPFS = async (file) => {
     setInfo("Connecting to IPFS...");
     try {
-      // Check if IPFS is available
       await ipfs.version();
       
       setInfo("Uploading file...");
@@ -209,6 +219,7 @@ useEffect(() => {
     setInfo("");
     setUploadProgress(0);
   
+    // Dosya adı kontrolü
     const fileExists = [...files, ...pendingFiles].some(f => 
       f.name.toLowerCase() === fileName.toLowerCase()
     );
@@ -225,9 +236,9 @@ useEffect(() => {
     setLoading(true);
     let ipfsHash = null;
     const tempId = Date.now();
-
+  
     try {
-      // Optimistically add to pending files
+      // 1. Pending listesine ekle (hemen görünür olsun)
       setPendingFiles(prev => [...prev, {
         id: tempId,
         name: fileName,
@@ -235,15 +246,21 @@ useEffect(() => {
         timestamp: Math.floor(Date.now() / 1000),
         retries: 0
       }]);
-
-      // 1. Upload to IPFS
+  
+      // 2. IPFS'e yükle
       ipfsHash = await uploadToIPFS(file);
       
-      // 2. Register on blockchain
+      // 3. Blockchain'e kaydet
       const tx = await contract.addFile(ipfsHash, fileName);
+      
+      // 4. Pending durumunu güncelle
+      setPendingFiles(prev => prev.map(f => 
+        f.id === tempId ? { ...f, status: 'confirming' } : f
+      ));
+      
       await tx.wait();
       
-      // Success - remove from pending
+      // Başarılı ise listeden kaldır
       setPendingFiles(prev => prev.filter(f => f.id !== tempId));
       setInfo("File uploaded successfully!");
       fetchFiles();
@@ -251,55 +268,50 @@ useEffect(() => {
     } catch (err) {
       console.error("Upload error:", err);
       
-      // Error handling
+      // Hata durumunda pending'i güncelle
       setPendingFiles(prev => prev.map(f => 
         f.id === tempId ? { 
           ...f, 
-          status: 'failed', 
-          ipfsHash: ipfsHash || null,
-          error: err.shortMessage || err.message
+          status: 'failed',
+          ipfsHash: ipfsHash || null, 
+          error: {
+            message: err.shortMessage || err.message,
+            type: err.message.includes("user rejected") ? "user_rejected" : "other"
+          }
         } : f
       ));
-
-      const errorMsg = err.message.includes("user rejected") 
+  
+      setInfo(err.message.includes("user rejected") 
         ? "Transaction canceled by user" 
-        : err.shortMessage || err.message;
-      
-      setInfo(errorMsg);
+        : err.shortMessage || err.message);
       
     } finally {
       setLoading(false);
       setFile(null);
       setFileName("");
       setUploadProgress(0);
-      document.querySelector('input[type="file"]').value = "";
+      if (document.querySelector('input[type="file"]')) {
+        document.querySelector('input[type="file"]').value = "";
+      }
     }
   };
 
   const retryUpload = async (pendingFile) => {
-    if (!pendingFile.ipfsHash) return;
+    if (!pendingFile.ipfsHash || !contract) return;
     
     setLoading(true);
     try {
-      // Update retry count
-      const newRetryCount = (pendingFile.retries || 0) + 1;
-      
-      // Eğer 3 deneme yapıldıysa dosyayı sil
-      if (newRetryCount > 3) {
-        setPendingFiles(prev => prev.filter(f => f.id !== pendingFile.id));
-        setInfo("Maximum retry attempts (3) reached. File removed from pending.");
-        return;
-      }
-      
+      // Update status to retrying
       setPendingFiles(prev => prev.map(f => 
         f.id === pendingFile.id ? { 
           ...f, 
           status: 'retrying',
-          retries: newRetryCount
+          retries: (f.retries || 0) + 1
         } : f
       ));
       
-      setInfo(`Retrying (Attempt ${newRetryCount})...`);
+      setInfo(`Retrying upload...`);
+      
       const tx = await contract.addFile(pendingFile.ipfsHash, pendingFile.name);
       await tx.wait();
       
@@ -309,25 +321,18 @@ useEffect(() => {
       fetchFiles();
       
     } catch (err) {
-      const newRetryCount = (pendingFile.retries || 0) + 1;
-      
-      // Eğer 3 deneme yapıldıysa dosyayı sil
-      if (newRetryCount >= 3) {
-        setPendingFiles(prev => prev.filter(f => f.id !== pendingFile.id));
-        setInfo("Maximum retry attempts (3) reached. File removed from pending.");
-        return;
-      }
-      
       setPendingFiles(prev => prev.map(f => 
         f.id === pendingFile.id ? { 
           ...f, 
           status: 'failed',
-          retries: newRetryCount,
-          error: err.shortMessage || err.message
+          error: {
+            message: err.shortMessage || err.message,
+            type: err.message.includes("user rejected") ? "user_rejected" : "other"
+          }
         } : f
       ));
       
-      setInfo(`Retry failed: ${err.shortMessage || err.message}`);
+      setInfo(`Error: ${err.shortMessage || err.message}`);
     } finally {
       setLoading(false);
     }
@@ -364,6 +369,78 @@ useEffect(() => {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Pending dosyaları localStorage'a kaydet
+useEffect(() => {
+  if (pendingFiles.length > 0) {
+    localStorage.setItem('pendingFiles', JSON.stringify(pendingFiles));
+  } else {
+    localStorage.removeItem('pendingFiles');
+  }
+}, [pendingFiles]);
+
+// Başlangıçta localStorage'dan yükle
+useEffect(() => {
+  const saved = localStorage.getItem('pendingFiles');
+  if (saved) {
+    try {
+      const parsed = JSON.parse(saved);
+      setPendingFiles(parsed);
+    } catch (e) {
+      console.error("Failed to parse pending files", e);
+    }
+  }
+}, []);
+
+  const renderPendingFiles = () => {
+    
+    const visiblePendingFiles = pendingFiles.filter(file => 
+      file.status == 'failed'
+    );
+  
+    if (visiblePendingFiles.length === 0) return null;
+  
+    return (
+      <>
+        <li className="files-divider">Pending Uploads</li>
+        {visiblePendingFiles.map((file) => (
+          <li key={`pending-${file.id}`} className={`file-item ${file.status}`}>
+            <span>
+              {file.name}
+              <span className="file-status">
+                {file.status === 'uploading' && ' (Uploading to IPFS...)'}
+                {file.status === 'confirming' && ' (Confirming on blockchain...)'}
+                {file.status === 'failed' && ` (Failed: ${file.error?.message})`}
+                {' - '}
+                {new Date(file.timestamp * 1000).toLocaleString()}
+              </span>
+            </span>
+            
+            {file.status === 'failed' && (
+              <div className="pending-actions">
+                {file.ipfsHash && (
+                  <button
+                    onClick={() => retryUpload(file)}
+                    disabled={loading}
+                    className="retry-button"
+                  >
+                    Retry
+                  </button>
+                )}
+                <button
+                  onClick={() => removePendingFile(file.id)}
+                  disabled={loading}
+                  className="remove-button"
+                >
+                  Remove
+                </button>
+              </div>
+            )}
+          </li>
+        ))}
+      </>
+    );
   };
 
   return (
@@ -489,51 +566,9 @@ useEffect(() => {
                       </button>
                     </li>
                   ))}
-                
                   
-                  {/* Pending files section */}
-                  {pendingFiles.length > 0 && (
-                    <li className="files-divider">Pending Uploads</li>
-                  )}
-                  
-                  {pendingFiles.filter(file => (file.retries || 0) < 3).map((file) => (
-                    <li 
-                      key={`pending-${file.id}`} 
-                      className={`file-item ${file.status}`}
-                    >
-                      <span>
-                        {file.name}
-                        <span className="file-status">
-                          {file.status === 'failed' && `(Failed - Attempt ${file.retries})`}
-                          {file.status === 'uploading' && '(Uploading...)'}
-                          {file.status === 'retrying' && '(Retrying...)'}
-                          {' '}
-                          {new Date(file.timestamp * 1000).toLocaleString()}
-                        </span>
-                      </span>
-                      <div>
-                        {file.status === 'failed' && file.ipfsHash && (
-                          <>
-                            <button
-                              onClick={() => retryUpload(file)}
-                              disabled={loading || (file.retries || 0) >= 3}
-                              className="retry-button"
-                            >
-                              Retry({file.retries || 0}/3)
-                            </button>
-                            <button
-                              onClick={() => removePendingFile(file.id)}
-                              disabled={loading}
-                              className="remove-button"
-                            >
-                              Remove
-                            </button>
-                            
-                          </>
-                        )}
-                      </div>
-                    </li>
-                  ))}
+                  {/* Pending files */}
+                  {renderPendingFiles()}
                 </>
               ) : (
                 <li className="no-files">No files found matching your criteria.</li>
