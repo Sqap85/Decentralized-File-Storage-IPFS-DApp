@@ -16,7 +16,7 @@ import "@rainbow-me/rainbowkit/styles.css";
 import "./App.css";
 import { FaGithub } from "react-icons/fa";
 
-const WALLETCONNECT_PROJECT_ID = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID;
+const WALLETCONNECT_PROJECT_ID = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID;//← paste your ID here https://cloud.walletconnect.com
 const CONTRACT_ADDRESS = "0xcf5Df6513F267192c6bEB5A3a5f29FB6FcFB7b41";
 
 const config = getDefaultConfig({
