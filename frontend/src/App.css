@@ -1,0 +1,318 @@
+/* File: App.css */
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.App {
+  max-width: 500px;
+  margin: 40px auto;
+  background: #18181b;
+  border-radius: 16px;
+  padding: 32px;
+  color: #fff;
+  box-shadow: 0 0 24px #0002;
+}
+
+.connect-button-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.info-message {
+  margin-bottom: 16px;
+  background: #23232b;
+  border-radius: 6px;
+  padding: 10px;
+  color: #60a5fa;
+  text-align: center;
+}
+
+.connected-address {
+  word-break: break-all;
+}
+
+.loading-message {
+  color: #60a5fa;
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+.upload-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.upload-form input[type="file"],
+.upload-form input[type="text"] {
+  background: #23232b;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px;
+}
+
+.upload-form button {
+  background: #6366f1;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 0;
+  font-weight: bold;
+  cursor: pointer;
+}
+.upload-form button:hover {
+  background-color: #4f46e5;
+}
+
+.upload-form button:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.filter-controls {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.filter-controls input {
+  flex: 1;
+  min-width: 120px;
+  background: #23232b;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px;
+}
+
+.filter-controls select {
+  background: #23232b;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px;
+}
+
+.file-count {
+  color: #aaa;
+  margin-bottom: 8px;
+}
+
+.files-list {
+  list-style: none;
+  padding: 0;
+}
+
+.file-item {
+  background: #23232b;
+  border-radius: 6px;
+  margin-bottom: 10px;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.file-item a {
+  color: #60a5fa;
+  text-decoration: underline;
+}
+
+.file-date {
+  font-size: 12px;
+  color: #aaa;
+}
+
+.delete-button {
+  background: #ef4444;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-left: 10px;
+}
+.delete-button:hover {
+  background-color: #dc2626;
+}
+
+.delete-button:disabled {
+  cursor: not-allowed;
+}
+
+.no-files {
+  color: #aaa;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+
+.files-section {
+  margin-top: 3em;
+}
+/* Add to App.css */
+.app-footer {
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 1px solid #2d2d2d;
+  color: #888;
+  font-size: 14px;
+}
+
+.footer-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.github-link {
+  color: inherit;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+}
+
+.github-icon {
+  font-size: 20px;
+  transition: color 0.2s;
+}
+
+.github-icon:hover {
+  color: #60a5fa;
+}
+
+/* Pending Files Section */
+.files-divider {
+  padding: 10px;
+  background: #2d2d2d;
+  color: #aaa;
+  font-weight: bold;
+  margin-top: 15px;
+  border-top: 1px solid #444;
+  border-bottom: 1px solid #444;
+  list-style: none;
+}
+
+.file-item {
+  background: #23232b;
+  border-radius: 6px;
+  margin-bottom: 10px;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: background-color 0.2s;
+}
+
+.file-item.uploading {
+  opacity: 0.7;
+  background-color: #252525;
+}
+
+.file-item.failed {
+  background-color: #2d1a1a;
+}
+
+.file-item.retrying {
+  background-color: #1a2d2a;
+}
+
+.file-status {
+  font-size: 0.8em;
+  color: #aaa;
+  margin-left: 5px;
+}
+
+.file-item a {
+  color: #60a5fa;
+  text-decoration: underline;
+}
+
+/* Buttons */
+.retry-button {
+  background: #6366f1;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-left: 10px;
+  transition: background-color 0.2s;
+  
+}
+
+.remove-button {
+  background: #ef4444;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-left: 10px;
+  transition: background-color 0.2s;
+}
+
+.retry-button:disabled,
+.remove-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.retry-button:hover:not(:disabled) {
+  background-color: #4f46e5;
+}
+
+.remove-button:hover:not(:disabled) {
+  background-color: #dc2626;
+}
+
+/* Aligning Buttons */
+.file-item div {
+  display: flex;
+  gap: 10px; /* Space between buttons */
+  align-items: center;
+}
