@@ -1,4 +1,3 @@
-//// filepath: /Users/enginelibol/Desktop/Decentralized File Storage (IPFS) DApp/ipfs-dapp/frontend/src/App.jsx
 import React from "react";
 import {
   getDefaultConfig,
