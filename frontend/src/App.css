@@ -1,4 +1,76 @@
-/* File: App.css */
+
+:root {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  font-weight: 500;
+  color: #646cff;
+  text-decoration: inherit;
+}
+
+a:hover {
+  color: #535bf2;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+}
+
+button {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #1a1a1a;
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
+
+button:hover {
+  border-color: #646cff;
+}
+
+button:focus,
+button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #213547;
+    background-color: #ffffff;
+  }
+  a:hover {
+    color: #747bff;
+  }
+  button {
+    background-color: #f9f9f9;
+  }
+}
+
 #root {
   max-width: 1280px;
   margin: 0 auto;
@@ -69,7 +141,6 @@
 .upload-form button:hover {
   background-color: #4f46e5;
 }
-
 .upload-form button:disabled {
   cursor: not-allowed;
   opacity: 0.7;
@@ -82,16 +153,7 @@
   flex-wrap: wrap;
 }
 
-.filter-controls input {
-  flex: 1;
-  min-width: 120px;
-  background: #23232b;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  padding: 8px;
-}
-
+.filter-controls input,
 .filter-controls select {
   background: #23232b;
   color: #fff;
@@ -118,6 +180,20 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  transition: background-color 0.2s;
+}
+
+.file-item.uploading {
+  opacity: 0.7;
+  background-color: #252525;
+}
+
+.file-item.failed {
+  background-color: #2d1a1a;
+}
+
+.file-item.retrying {
+  background-color: #1a2d2a;
 }
 
 .file-item a {
@@ -125,9 +201,10 @@
   text-decoration: underline;
 }
 
-.file-date {
-  font-size: 12px;
+.file-status {
+  font-size: 0.8em;
   color: #aaa;
+  margin-left: 5px;
 }
 
 .delete-button {
@@ -143,9 +220,27 @@
 .delete-button:hover {
   background-color: #dc2626;
 }
-
 .delete-button:disabled {
   cursor: not-allowed;
+}
+
+.retry-button {
+  background: #6366f1;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-left: 10px;
+  
+}
+.retry-button:hover {
+  background-color: #4f46e5;
+}
+.retry-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
 }
 
 .no-files {
@@ -191,7 +286,7 @@
 .files-section {
   margin-top: 3em;
 }
-/* Add to App.css */
+
 .app-footer {
   margin-top: 40px;
   padding-top: 20px;
@@ -223,7 +318,7 @@
   color: #60a5fa;
 }
 
-/* Pending Files Section */
+/* Pending File Dividers */
 .files-divider {
   padding: 10px;
   background: #2d2d2d;
@@ -233,86 +328,4 @@
   border-top: 1px solid #444;
   border-bottom: 1px solid #444;
   list-style: none;
-}
-
-.file-item {
-  background: #23232b;
-  border-radius: 6px;
-  margin-bottom: 10px;
-  padding: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  transition: background-color 0.2s;
-}
-
-.file-item.uploading {
-  opacity: 0.7;
-  background-color: #252525;
-}
-
-.file-item.failed {
-  background-color: #2d1a1a;
-}
-
-.file-item.retrying {
-  background-color: #1a2d2a;
-}
-
-.file-status {
-  font-size: 0.8em;
-  color: #aaa;
-  margin-left: 5px;
-}
-
-.file-item a {
-  color: #60a5fa;
-  text-decoration: underline;
-}
-
-/* Buttons */
-.retry-button {
-  background: #6366f1;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  padding: 6px 14px;
-  font-weight: bold;
-  cursor: pointer;
-  margin-left: 10px;
-  transition: background-color 0.2s;
-  
-}
-
-.remove-button {
-  background: #ef4444;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  padding: 6px 14px;
-  font-weight: bold;
-  cursor: pointer;
-  margin-left: 10px;
-  transition: background-color 0.2s;
-}
-
-.retry-button:disabled,
-.remove-button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.retry-button:hover:not(:disabled) {
-  background-color: #4f46e5;
-}
-
-.remove-button:hover:not(:disabled) {
-  background-color: #dc2626;
-}
-
-/* Aligning Buttons */
-.file-item div {
-  display: flex;
-  gap: 10px; /* Space between buttons */
-  align-items: center;
 }
