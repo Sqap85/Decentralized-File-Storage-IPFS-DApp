@@ -1,3 +1,4 @@
+//// filepath: /Users/enginelibol/Desktop/Decentralized File Storage (IPFS) DApp/ipfs-dapp/frontend/src/App.jsx
 import React from "react";
 import {
   getDefaultConfig,
@@ -11,7 +12,7 @@ import "@rainbow-me/rainbowkit/styles.css";
 import "./App.css";
 import Dashboard from "./Dashboard";
 
-const WALLETCONNECT_PROJECT_ID = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID;//← paste your ID here https://cloud.walletconnect.com
+const WALLETCONNECT_PROJECT_ID = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID;
 
 // Wagmi + RainbowKit default config
 const config = getDefaultConfig({

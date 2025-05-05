@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 // File hash calculation function (SHA-256)
 async function getFileHash(file) {
@@ -22,9 +22,12 @@ export default function FileUploadForm({
   setUploadProgress,
   setInfo,
   fetchFiles,
+  onUploadSuccess,
 }) {
   const [selectedFile, setSelectedFile] = useState(null);
   const [fileName, setFileName] = useState("");
+  const fileInputRef = useRef(null); // Dosya inputunu sıfırlamak için
+
   // Store uploaded file hashes in localStorage
   const [uploadedHashes, setUploadedHashes] = useState(() => {
     try {
@@ -98,6 +101,12 @@ export default function FileUploadForm({
         await tx.wait();
         setInfo("File successfully saved to blockchain!");
         fetchFiles();
+        if (onUploadSuccess) {
+          setSelectedFile(null);
+          setFileName("");
+          if (fileInputRef.current) fileInputRef.current.value = "";
+          onUploadSuccess();
+        }
       } catch (err) {
         setInfo(
           err.message.includes("user rejected")
@@ -167,6 +176,12 @@ export default function FileUploadForm({
       setPendingFiles((prev) => prev.filter((f) => f.id !== tempId));
       setInfo("File uploaded successfully!");
       fetchFiles();
+      if (onUploadSuccess) {
+        setSelectedFile(null);
+        setFileName("");
+        if (fileInputRef.current) fileInputRef.current.value = "";
+        onUploadSuccess();
+      }
     } catch (err) {
       console.error("Upload error:", err);
       setPendingFiles((prev) =>
@@ -201,6 +216,7 @@ export default function FileUploadForm({
     <form onSubmit={handleUpload} className="upload-form">
       <input
         type="file"
+        ref={fileInputRef}
         onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
         disabled={loading}
       />

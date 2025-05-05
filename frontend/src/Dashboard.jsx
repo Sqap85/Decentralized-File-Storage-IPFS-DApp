@@ -48,7 +48,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (info.trim()) {
-      const timer = setTimeout(() => setInfo(""), 5000);
+      const timer = setTimeout(() => setInfo(""), 6000);
       return () => clearTimeout(timer);
     }
   }, [info]);
@@ -88,11 +88,9 @@ export default function Dashboard() {
 
   async function fetchFiles() {
     if (!contract) return;
-    setInfo("Loading files...");
     try {
       const filesArr = await contract.getMyFiles();
       setFiles(filesArr);
-      setInfo("");
     } catch (err) {
       console.error("Fetch files error:", err);
       setInfo("Failed to fetch files: " + (err.shortMessage || err.message));
@@ -242,6 +240,9 @@ export default function Dashboard() {
             setUploadProgress={setUploadProgress}
             setInfo={setInfo}
             fetchFiles={fetchFiles}
+            onUploadSuccess={() => {
+              setUploadProgress(0);
+            }}
           />
 
           <div className="files-section">
@@ -268,7 +269,13 @@ export default function Dashboard() {
             filteredFiles={filteredFiles}
             pendingFiles={pendingFiles}
             loading={loading}
-            onDelete={deleteFile}
+            onDelete={(filteredIndex) => {
+              const fileToDelete = filteredFiles[filteredIndex];
+              const actualIndex = files.findIndex(
+                (f) => f.ipfsHash === fileToDelete.ipfsHash
+              );
+              deleteFile(actualIndex);
+            }}
             onRemovePending={removePendingFile}
             onRetryPending={retryPendingFile}
           />
