@@ -75,7 +75,7 @@ export default function FileUploadForm({
     setUploadProgress(0);
 
     if (!selectedFile || !fileName || !contract) {
-      setInfo("Please select a file, enter a name, and connect your wallet.");
+      setInfo("Please select a file and enter a name.");
       return;
     }
 
