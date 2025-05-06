@@ -161,16 +161,16 @@ This smart contract lets users store, retrieve, and delete their own file hashes
 ## 🖼️ Screenshots
 
 ### Connect Wallet
-![Connect Wallet](./frontend/public/screenshots/connect-wallet.png)
+![Connect Wallet](./frontend/screenshots/connect-wallet.png)
 
 ### Wallet Modal
-![Wallet Modal](./frontend/public/screenshots/wallet-modal.png)
+![Wallet Modal](./frontend/screenshots/wallet-modal.png)
 
 ### File List and Upload
-![File List and Upload](./frontend/public/screenshots/file-list.png)
+![File List and Upload](./frontend/screenshots/file-list.png)
 
 ### Main Screen After Connect
-![Main Screen After Connect](./frontend/public/screenshots/main-screen.png)
+![Main Screen After Connect](./frontend/screenshots/main-screen.png)
 
 ---
 
