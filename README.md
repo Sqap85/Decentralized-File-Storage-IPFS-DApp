@@ -1,6 +1,6 @@
 <div align="center">
   <h1>📁 IPFS File Storage DApp</h1>
-  <p>React + Ethers.js + RainbowKit + IPFS + Solidity ile geliştirilmiş merkeziyetsiz dosya depolama uygulaması</p>
+  <p>React + Ethers.js + RainbowKit + IPFS + Solidity + Foundry ile geliştirilmiş merkeziyetsiz dosya depolama uygulaması</p>
 </div>
 
 ---
@@ -73,16 +73,6 @@ Bu kontrat, kullanıcıların dosyalarını Ethereum blockchain üzerinde yönet
 
 - Aynı kullanıcı aynı hash'i birden fazla ekleyemez.
 - Kullanıcı yalnızca kendi dosyalarına erişebilir ve silebilir.
-
----
-
-## 🧪 Teknolojiler
-
-- React + Vite
-- Ethers.js
-- RainbowKit & Wagmi
-- IPFS (`ipfs-http-client`)
-- Solidity
 
 ---
 
