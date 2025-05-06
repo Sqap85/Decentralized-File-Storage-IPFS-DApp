@@ -157,4 +157,21 @@ This smart contract lets users store, retrieve, and delete their own file hashes
 - Users can only access and delete their own files
 
 ---
+
+## 🖼️ Screenshots
+
+### Connect Wallet
+![Connect Wallet](./frontend/public/screenshots/connect-wallet.png)
+
+### Wallet Modal
+![Wallet Modal](./frontend/public/screenshots/wallet-modal.png)
+
+### File List and Upload
+![File List and Upload](./frontend/public/screenshots/file-list.png)
+
+### Main Screen After Connect
+![Main Screen After Connect](./frontend/public/screenshots/main-screen.png)
+
+---
+
 <div align="center"> <p><strong>🔓</strong></p> <p><strong>“A world in which everyone has access to information without gatekeepers is a freer world.”</strong></p> <p>— David Chaum</p> </div>
