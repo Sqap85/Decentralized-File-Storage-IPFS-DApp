@@ -26,7 +26,8 @@ export default function FileUploadForm({
 }) {
   const [selectedFile, setSelectedFile] = useState(null);
   const [fileName, setFileName] = useState("");
-  const fileInputRef = useRef(null); // Dosya inputunu sıfırlamak için
+  const fileInputRef = useRef(null);
+  const [fileInputKey, setFileInputKey] = useState(Date.now());
 
   // Store uploaded file hashes in localStorage
   const [uploadedHashes, setUploadedHashes] = useState(() => {
@@ -84,17 +85,24 @@ export default function FileUploadForm({
 
     // Check if the hash exists on the blockchain (could be ipfsHash or hash field)
     const blockchainHashExists = files.some(
-      (f) => f.fileHash === fileHash || f.hash === fileHash || f.ipfsHash === fileHash
+      (f) =>
+        f.fileHash === fileHash ||
+        f.hash === fileHash ||
+        f.ipfsHash === fileHash
     );
     if (blockchainHashExists) {
-      setInfo("This file is already registered on the blockchain. You cannot upload it again.");
+      setInfo(
+        "This file is already registered on the blockchain. You cannot upload it again."
+      );
       return;
     }
 
     // Was it previously uploaded to IPFS? (check hash in localStorage)
     const hashRecord = uploadedHashes.find((h) => h.hash === fileHash);
     if (hashRecord) {
-      setInfo("This file was previously uploaded to IPFS but NOT to the blockchain. Now saving to blockchain...");
+      setInfo(
+        "This file was previously uploaded to IPFS but NOT to the blockchain. Now saving to blockchain..."
+      );
       setLoading(true);
       try {
         const tx = await contract.addFile(hashRecord.ipfsHash, fileName);
@@ -104,6 +112,7 @@ export default function FileUploadForm({
         if (onUploadSuccess) {
           setSelectedFile(null);
           setFileName("");
+          setFileInputKey(Date.now());
           if (fileInputRef.current) fileInputRef.current.value = "";
           onUploadSuccess();
         }
@@ -122,12 +131,12 @@ export default function FileUploadForm({
 
     // Is there a pending file with the same name and ipfsHash?
     const alreadyUploaded = pendingFiles.find(
-      (f) =>
-        f.name.toLowerCase() === fileName.toLowerCase() &&
-        f.ipfsHash
+      (f) => f.name.toLowerCase() === fileName.toLowerCase() && f.ipfsHash
     );
     if (alreadyUploaded) {
-      setInfo("This file is already uploaded to IPFS and pending. Please remove it from the pending list or complete the operation first.");
+      setInfo(
+        "This file is already uploaded to IPFS and pending. Please remove it from the pending list or complete the operation first."
+      );
       return;
     }
 
@@ -159,10 +168,7 @@ export default function FileUploadForm({
       ipfsHash = await uploadToIPFS(selectedFile);
 
       // Save hash and ipfsHash
-      setUploadedHashes((prev) => [
-        ...prev,
-        { hash: fileHash, ipfsHash },
-      ]);
+      setUploadedHashes((prev) => [...prev, { hash: fileHash, ipfsHash }]);
 
       setPendingFiles((prev) =>
         prev.map((f) =>
@@ -179,6 +185,7 @@ export default function FileUploadForm({
       if (onUploadSuccess) {
         setSelectedFile(null);
         setFileName("");
+        setFileInputKey(Date.now());
         if (fileInputRef.current) fileInputRef.current.value = "";
         onUploadSuccess();
       }
@@ -215,6 +222,7 @@ export default function FileUploadForm({
   return (
     <form onSubmit={handleUpload} className="upload-form">
       <input
+        key={fileInputKey}
         type="file"
         ref={fileInputRef}
         onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
