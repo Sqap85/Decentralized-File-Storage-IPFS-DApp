@@ -286,7 +286,7 @@ export default function Dashboard() {
         <div className="footer-content">
           <span>85 Company © {currentYear} - MIT License</span>
           <a
-            href="https://github.com/Sqap85/Decentralized-File-Storage-IPFS-DApp"
+            href="https://github.com/Sqap85/File-Storage-DApp"
             target="_blank"
             rel="noopener noreferrer"
             className="github-link"
