@@ -180,7 +180,7 @@ export default function Dashboard() {
       const tx = await contract.addFile(pf.ipfsHash, pf.name);
       await tx.wait();
       setPendingFiles((prev) => prev.filter((f) => f.id !== pf.id));
-      setInfo("Dosya blockchain'e başarıyla kaydedildi!");
+      setInfo("File successfully saved to blockchain!");
       fetchFiles();
     } catch (err) {
       setPendingFiles((prev) =>
