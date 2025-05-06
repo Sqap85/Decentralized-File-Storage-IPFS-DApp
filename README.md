@@ -85,11 +85,11 @@ This smart contract lets users store, retrieve, and delete their own file hashes
 ### Wallet Modal
 ![Wallet Modal](./frontend/screenshots/wallet-modal.png)
 
-### File List
-![File List and Upload](./frontend/screenshots/file-list.png)
-
 ### Main Screen After Connect
 ![Main Screen After Connect](./frontend/screenshots/main-screen.png)
+
+### File List
+![File List and Upload](./frontend/screenshots/file-list.png)
 
 ---
 
